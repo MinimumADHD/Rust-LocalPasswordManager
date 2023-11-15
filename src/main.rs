@@ -1,3 +1,4 @@
+use std::ffi::c_int;
 use std::io;
 use std::fs::File;
 use std::io::Write;
@@ -36,8 +37,29 @@ fn get_rand_spec() -> u8 {
     _spec.as_bytes()[rand_num]
 }
 
-fn main() {
-    let _website_name = get_input_from_keyboard("INSERT THE SERVICE'S NAME.");
-    println!("You entered {}", _website_name);
+fn gen_write_file(file_name: String, passwd: String) -> Result<(), std::io::Error> {
+    let mut _file_to_write = File::create(file_name.to_owned() + ".txt")?;
+    _file_to_write.write_all(passwd.as_bytes())?;
+    Ok(())
 }
 
+fn main() -> Result<(), std::io::Error> {
+    let _website_name = get_input_from_keyboard("INSERT THE SERVICE'S NAME.");
+    let mut _changeable_string = String::new();
+    println!("You entered {}", _website_name);
+    for _ in 0..8 {
+        _changeable_string.push(gen_rand_al() as char);
+    }
+
+    for _ in 0..2 {
+        _changeable_string.push(get_rand_spec() as char);
+    }
+
+    for _ in 0..2 {
+        _changeable_string.push(gen_rand_num() as char);
+    }
+
+    println!("Password generated for {} is {}", _website_name, _changeable_string);
+    gen_write_file(_website_name, _changeable_string)?;
+    Ok(())
+}
